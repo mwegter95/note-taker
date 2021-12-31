@@ -40,15 +40,37 @@ app.get('*', (req, res) => {
 // routes for API
 // GET notes from the database
 app.get('/api/notes', (req, res) => {
-    // read notes_db database and return respond with parsed data
+    // read notes_db database and return response with parsed data
     fs.readFile(notes_db, (err, data) => {
-        dataParsed = JSON.parse(data)
+        dataParsed = JSON.parse(data);
         res.json(dataParsed);
     });
 });
 
 // POST new note to the database
+app.post('/api/notes', (req, res) => {
+    console.log("line 52 server.js");
+    const newNote = req.body;
+    let currentNotes = {}
+   fs.readFile(notes_db, (err, data) => {
+       currentNotes = (JSON.parse(data));
+        console.log("line 59" + currentNotes);
+        console.log(newNote);
+        newNote.id = idCount++;
+        console.log(newNote);
+        currentNotes.push(newNote);
+        console.log(currentNotes);
+        res.json(currentNotes);
+    });
+    
+
+});
 
 app.listen(PORT, () => {
     console.log(`API server now on port ${PORT}!`);
-  });
+});
+
+// functions
+
+
+
