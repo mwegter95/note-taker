@@ -66,6 +66,11 @@ app.post('/api/notes', (req, res) => {
 
 });
 
+// DELETE a note from the db.json, given a note id
+app.delete('/api/notes/:id', (req, res) => {
+    console.log('line 71' + req.params.id)
+})
+
 // catch any undesignated website url and go to home
 app.get('*', (req, res) => {
     res.sendFile(path.join(__dirname, './public/index.html'));
