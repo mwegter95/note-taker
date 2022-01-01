@@ -66,6 +66,22 @@ app.post('/api/notes', (req, res) => {
 
 });
 
+// DELETE a note from the db.json, given a note id
+app.delete('/api/notes/:id', (req, res) => {
+    console.log('this is the note that will be deleted: ' + req.params.id)
+    const idToDelete = req.params.id;
+    fs.readFile(notes_db, (err, data) => {
+        currentNotes = (JSON.parse(data).notes);
+        notesAfterDeleting = currentNotes.filter(note => note.id !== idToDelete);
+        fs.writeFile(notes_db, JSON.stringify({ notes: notesAfterDeleting }, null, 2), function (err) {
+            if (err) throw err;
+            console.log('Deleted!')
+            res.json(notesAfterDeleting);
+        });
+        
+    })
+})
+
 // catch any undesignated website url and go to home
 app.get('*', (req, res) => {
     res.sendFile(path.join(__dirname, './public/index.html'));
