@@ -1,6 +1,8 @@
 const express = require('express');
 const path = require('path');
 const fs = require('fs');
+const { notes } = require("./db/db");
+
 
 
 // define port
@@ -31,9 +33,6 @@ app.get('/', (req, res) => {
     res.sendFile(path.join(__dirname, './public/index.html'));
 });
 
-app.get('*', (req, res) => {
-    res.sendFile(path.join(__dirname, './public/index.html'));
-});
 
 
 
@@ -43,27 +42,36 @@ app.get('/api/notes', (req, res) => {
     // read notes_db database and return response with parsed data
     fs.readFile(notes_db, (err, data) => {
         dataParsed = JSON.parse(data);
-        res.json(dataParsed);
+        res.json(dataParsed.notes);
     });
 });
 
 // POST new note to the database
 app.post('/api/notes', (req, res) => {
-    console.log("line 52 server.js");
+    console.log("line 51 server.js");
     const newNote = req.body;
-    let currentNotes = {}
    fs.readFile(notes_db, (err, data) => {
-       currentNotes = (JSON.parse(data));
+        currentNotes = (JSON.parse(data).notes);
         console.log("line 59" + currentNotes);
         console.log(newNote);
         newNote.id = idCount++;
         console.log(newNote);
         currentNotes.push(newNote);
-        console.log(currentNotes);
-        res.json(currentNotes);
+        console.log("line 62" + (currentNotes));
+        fs.writeFile(notes_db, 
+            JSON.stringify({notes: currentNotes }, null, 2), function (err) {
+            if (err) throw err;
+            console.log('Updated!');
+            res.json(currentNotes);
+        });
     });
     
 
+});
+
+// catch any unknown website url and go to home
+app.get('*', (req, res) => {
+    res.sendFile(path.join(__dirname, './public/index.html'));
 });
 
 app.listen(PORT, () => {
