@@ -47,14 +47,14 @@ app.get('/api/notes', (req, res) => {
 
 // POST new note to the database
 app.post('/api/notes', (req, res) => {
-    console.log("line 51 server.js");
+    console.log("line 50 server.js");
     const newNote = req.body;
    fs.readFile(notes_db, (err, data) => {
         currentNotes = (JSON.parse(data).notes);
         newNote.id = uuidv4();
         console.log(newNote);
         currentNotes.push(newNote);
-        console.log("line 62" + (currentNotes));
+        console.log("line 57" + (currentNotes));
         fs.writeFile(notes_db, 
             JSON.stringify({notes: currentNotes }, null, 2), function (err) {
             if (err) throw err;
@@ -72,7 +72,15 @@ app.delete('/api/notes/:id', (req, res) => {
     const idToDelete = req.params.id;
     fs.readFile(notes_db, (err, data) => {
         currentNotes = (JSON.parse(data).notes);
+        
+        // gets the whole noteToDelete object (from just the id that we were passed) into its own array, so it can log it in the console or be accessed, in case that's useful
+        const noteToDelete = currentNotes.filter(note => note.id === idToDelete);
+        console.log(noteToDelete)
+
+        // makes an array of the notes excluding the note that was clicked delete
         notesAfterDeleting = currentNotes.filter(note => note.id !== idToDelete);
+
+        // write the db file with the new array excluding the deleted note
         fs.writeFile(notes_db, JSON.stringify({ notes: notesAfterDeleting }, null, 2), function (err) {
             if (err) throw err;
             console.log('Deleted!')
