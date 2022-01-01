@@ -1,7 +1,8 @@
 const express = require('express');
 const path = require('path');
 const fs = require('fs');
-const { notes } = require("./db/db");
+// require uuid for making unique id numbers for notes
+const { v4: uuidv4 } = require('uuid')
 
 
 
@@ -18,9 +19,7 @@ app.use(express.json());
 // serve static files
 app.use(express.static(path.join(__dirname, 'public')));
 
-// make an id counter for saving and loading notes with unique id
-let idCount = 1;
-
+// notes_db will be our db.json file with notes information
 const notes_db = path.join(__dirname, './db/db.json');
 
 
@@ -52,9 +51,7 @@ app.post('/api/notes', (req, res) => {
     const newNote = req.body;
    fs.readFile(notes_db, (err, data) => {
         currentNotes = (JSON.parse(data).notes);
-        console.log("line 59" + currentNotes);
-        console.log(newNote);
-        newNote.id = idCount++;
+        newNote.id = uuidv4();
         console.log(newNote);
         currentNotes.push(newNote);
         console.log("line 62" + (currentNotes));
@@ -69,7 +66,7 @@ app.post('/api/notes', (req, res) => {
 
 });
 
-// catch any unknown website url and go to home
+// catch any undesignated website url and go to home
 app.get('*', (req, res) => {
     res.sendFile(path.join(__dirname, './public/index.html'));
 });
